@@ -40,12 +40,12 @@ const Player = (name, side) => {
     return 'Go ' + side + ', ' + (side == 'Capitalism' ? "the commies didn't stand a chance." : 'down with those capitalist pigs.');
   };
   const win = () => {
-    console.log(name + ' wins!');
+    // console.log(name + ' wins!');
     winMessage.children[0].innerHTML = name=='Human' ? 'YOU WIN!' : name.toUpperCase() + ' WINS!';
     winMessage.children[0].style.fontSize = name=='Computer' ? '3em' : '5em';
     winMessage.children[0].style.paddingTop = name=='Computer' ? '1em' : '0em';
     winMessage.children[1].innerHTML = turn > computer.getTurn()+1 ? 'Even if you did cheat...' : winPhrase();
-    console.log(turn + ' / ' + computer.getTurn());
+    // console.log(turn + ' / ' + computer.getTurn());
 
     animateWinMessage();
   };
@@ -60,8 +60,8 @@ const Player = (name, side) => {
   const move = () => {
     let chosenSquare = name == "Human" ? selectSquareArray.indexOf(event.target) :
         computerLogic();
-    // console.log(chosenSquare);
-    let currentCounter = side == 'Communism' ? coinObjects[turn-1] : sickleObjects[turn-1];
+    console.log(chosenSquare);
+    let currentCounter = side == 'Capitalism' ? coinObjects[turn-1] : sickleObjects[turn-1];
     let won = false;
     currentCounter.animate(squareObjects[chosenSquare].xy);
     chosenSquares.push(chosenSquare);
@@ -89,16 +89,13 @@ const Player = (name, side) => {
 
   };
   const reset = () => {
-
-    // for (i = turn; i > 0; i--) { //put counters back
-    for (let i = 0; i < turn; i++) {
-      let currentCounter = side == 'Communism' ? coinObjects[turn-1-i] : sickleObjects[turn-1-i];
+    for (let i = 0; i < turn; i++) { // put counters back
+      let currentCounter = side == 'Capitalism' ? coinObjects[turn-1-i] : sickleObjects[turn-1-i]; // IS THERE AN ISSUE HERE?
 
       let delay = i * 200;
       window.setTimeout(function() {
         currentCounter.animate(currentCounter.pileXY, true);
       }, delay);
-
 
     }
     chosenSquares = [];
@@ -106,17 +103,18 @@ const Player = (name, side) => {
   };
   const switchSides = () => {
     side == 'Communism' ? side = 'Capitalism' : side = 'Communism';
+    console.log(name + ': ' + side);
   };
-  const getName = () => name;
-  const getSide = () => side;
+  // const getName = () => name;
+  // const getSide = () => side;
   const getTurn = () => turn;
 
-  const samename = name;
-  return {winPhrase, samename, move, turn, getTurn, reset, switchSides}
+  // const samename = name;
+  return {winPhrase, move, turn, getTurn, reset, switchSides}
 };
 
-let computer = Player('Computer', 'Capitalism');
-let human = Player('Human', 'Communism');
+let computer = Player('Computer', 'Communism');
+let human = Player('Human', 'Capitalism');
 
 
 const Counter = (type, numberFromTop) => {
@@ -215,8 +213,6 @@ function animateCounter(counter, start, end, intro) {
         (timer <= (length/2) ?
           (((       timer)) * (modifier)) :
           (((length)-timer) * (modifier)) ) +
-          // ( ((       timer) - ((timer*timer)*0.05)) * (modifier) ) :
-          // ( ((length)-timer) * (modifier) ) ) +
         'em';
       counter.style.left = start[0] + (moveX * progress) + 'em';
       timer++;
@@ -251,8 +247,6 @@ function randomMoveChooser(array) {
 
 
 function computerLogic() {
-
-
   let move = squareObjects.indexOf(randomMoveChooser(checkEmptySquares()));
   return move;
 
@@ -281,8 +275,12 @@ selectSquares.forEach(square => {
 function reset() {
   console.log('reset');
   winMessageCont.style.display = 'none';
+  winMessageCont.style.opacity = 0;
   human.reset();
   computer.reset();
+  squareObjects.forEach(square => {
+    square.taken = false;
+  });
 }
 
 
@@ -294,9 +292,7 @@ function sideSwitch() {
   unchosen.classList.remove('unchosen-side');
   chosen.classList.add('unchosen-side');
   unchosen.classList.add('chosen-side');
-  // if
-  // let computer = Player('Computer', 'Capitalism');
-  // let human = Player('Human', 'Communism');
+
   reset();
   computer.switchSides();
   human.switchSides();
